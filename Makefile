@@ -33,4 +33,5 @@ run:
 
 clean:
 	rm -rf .venv/
+	rm -f runtime.log
 
