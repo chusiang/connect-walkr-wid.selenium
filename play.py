@@ -14,7 +14,6 @@ import ConfigParser
 import logging
 from time import sleep
 
-driver = webdriver.Firefox()
 
 """
 profile = ['<URL>', '<MY_WID>', '<FRIEND_WID>']
@@ -25,8 +24,14 @@ def load_setting():
     
   url = config.get('profile', 'url')
   my_wid = config.get('profile', 'my_wid')
-  friends_wid = config.get('friends_wid', 'friends_wid1')
-  profile = [url, my_wid, friends_wid]
+  profile = [url, my_wid]
+
+  # load all friends_wid.
+  _friends_wid = config.items("friends_wid")
+  for item in _friends_wid:
+    print "key = %s, valule = %s" % (item[0], item[1])
+
+  print _friends_wid
 
   logging.info('Load setting.')
   return profile
@@ -70,11 +75,16 @@ def close():
 
 if __name__ == "__main__":
 
-  logging.basicConfig(filename='runtime.log', \
-    format='[%(asctime)s] %(levelname)s: %(message)s', \
-    level=logging.INFO)
+  try:
+    logging.basicConfig(filename='runtime.log', \
+      format='[%(asctime)s] %(levelname)s: %(message)s', \
+      level=logging.INFO)
+    profile = load_setting()
 
-  profile = load_setting()
-  checkin(profile)
-  close()
+    driver = webdriver.Firefox()
+    checkin(profile)
+
+  finally:
+    close()
+    pass
 
