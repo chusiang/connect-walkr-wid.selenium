@@ -48,3 +48,5 @@ This is a selenium script for quick open [walkr official website](http://walkrga
         [2016-04-18 11:41:11,284] INFO: Keyin my WID: xxxxxxxxxxx
         [2016-04-18 11:41:11,467] INFO: Keyin new friend's WID: xxxxxxxxxxx
         ...
+
+By the way, if you need a friend, you can join me (**ViXQdeva_Dk**).
