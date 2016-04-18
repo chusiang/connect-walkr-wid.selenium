@@ -14,7 +14,6 @@ import ConfigParser
 import logging
 from time import sleep
 
-driver = webdriver.Firefox()
 
 """
 profile = ['<URL>', '<MY_WID>', '<FRIEND_WID>']
@@ -25,41 +24,50 @@ def load_setting():
     
   url = config.get('profile', 'url')
   my_wid = config.get('profile', 'my_wid')
-  friends_wid = config.get('friends_wid', 'friends_wid1')
-  profile = [url, my_wid, friends_wid]
+  _profile = ["url", url, "my_wid", my_wid]
+
+  # Load all friends_wid.
+  _friends_wid = config.items("friends_wid")
+  _profile.append(_friends_wid)
 
   logging.info('Load setting.')
-  return profile
+  return _profile
 
 
 """
 Open Firefox and verify new friend's WID on official website.
 """
-def checkin(profile):
+def checkin(_profile):
 
   # Open the Firefox and go to the verify website.
-  _url = str(profile[0])
-  driver.get(_url)
-  assert "COMMUNITY - Walkr - Galaxy Adventure in Your Pocket" in driver.title
+  driver.get(_profile[1])
   logging.info('Go to website.')
+  assert "COMMUNITY - Walkr - Galaxy Adventure in Your Pocket" in driver.title
   
-  # keyin the my_wid.
-  elem_my_wid = driver.find_element_by_xpath('/html/body/div[2]/div[3]/div/div/div[2]/div[3]/div[1]/div[1]/div[2]/input')
-  elem_my_wid.send_keys(profile[1])
-  logging.info('Keyin my WID: ' + profile[1])
-  
-  # keyin the friend_wid.
-  elem_friend_wid = driver.find_element_by_xpath('/html/body/div[2]/div[3]/div/div/div[2]/div[3]/div[1]/div[1]/div[3]/input')
-  elem_friend_wid.send_keys(profile[2])
-  logging.info('Keyin new friend\'s WID: ' + profile[2])
-  
-  # click submit.
-  elem_submit = driver.find_element_by_xpath('/html/body/div[2]/div[3]/div/div/div[2]/div[3]/a/div[1]')
-  elem_submit.click()
-  logging.info('Click verify buttion')
-  
-  # review result.
-  sleep(3)
+  # Loop for keyin firends wid.
+  _friends_wid = _profile[4]
+  for _item in _friends_wid:
+
+    # Keyin the my_wid.
+    elem_my_wid = driver.find_element_by_xpath('/html/body/div[2]/div[3]/div/div/div[2]/div[3]/div[1]/div[1]/div[2]/input')
+    elem_my_wid.send_keys(_profile[3])
+    logging.info('Keyin my WID: ' + _profile[3])
+    
+    # Keyin the friend_wid.
+    elem_friend_wid = driver.find_element_by_xpath('/html/body/div[2]/div[3]/div/div/div[2]/div[3]/div[1]/div[1]/div[3]/input')
+    elem_friend_wid.send_keys(_item[1])
+    logging.info('Keyin new friend\'s WID: ' + _item[1])
+    
+    # Click submit.
+    elem_submit = driver.find_element_by_xpath('/html/body/div[2]/div[3]/div/div/div[2]/div[3]/a/div[1]')
+    elem_submit.click()
+    logging.info('Click verify buttion')
+    
+    # Review result.
+    sleep(60)
+
+    # Refresh web page.
+    driver.refresh()
 
 
 """
@@ -70,11 +78,16 @@ def close():
 
 if __name__ == "__main__":
 
-  logging.basicConfig(filename='runtime.log', \
-    format='[%(asctime)s] %(levelname)s: %(message)s', \
-    level=logging.INFO)
+  try:
+    logging.basicConfig(filename='runtime.log', \
+      format='[%(asctime)s] %(levelname)s: %(message)s', \
+      level=logging.INFO)
+    profile = load_setting()
 
-  profile = load_setting()
-  checkin(profile)
-  close()
+    driver = webdriver.Firefox()
+    checkin(profile)
+
+  finally:
+    close()
+    pass
 
